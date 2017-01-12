@@ -47,3 +47,21 @@ The recommended branch for general use is **master**.
 ### Spark Worker
     docker run -d --name spark-worker1 -h spark-worker1 --link=hdfs-namenode:hdfs-namenode --link=spark-master:spark-master \
     gelog/spark:1.2-bin-hadoop2.3 spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+
+
+-------------------------------
+### junaid changes
+
+#### start spark master : 
+```bash
+docker run -d -h spark-master -p 8080:8080 -p 7077:7077 -e "NAMENODE=172.31.0.58" -e "SERVICE=master" --network=host spark
+```
+
+#### start spark worker :
+```
+docker run -d -h spark-worker -p 8080:8080 -p 7077:7077 -e "NAMENODE=172.31.0.58" -e "SERVICE=worker" -e "MASTER=172.31.0.58" --network=host spark
+```
+
+### submit spark job
+```
+docker run -it -v <path to jar file folder on host>:/target/ -e "NAMENODE=172.31.0.58"  --network=host mi096684/spark spark-submit --master spark://172.31.0.58:7077 --class class.path jarfile.jar 172.31.0.58:9092 spark://172.31.0.58:7077 hdfs://172.31.0.58:9000/iris.txt hdfs://172.31.0.58:9000/output.txt 
